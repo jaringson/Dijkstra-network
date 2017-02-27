@@ -1,0 +1,13 @@
+C:\Users\Jaron\Documents\Visual Studio 2015\Projects\Dijkstra-network\Dijkstra-network\bin\Debug\NetworkRouting.exe.config
+C:\Users\Jaron\Documents\Visual Studio 2015\Projects\Dijkstra-network\Dijkstra-network\obj\x86\Debug\NetworkRouting.exe
+C:\Users\Jaron\Documents\Visual Studio 2015\Projects\Dijkstra-network\Dijkstra-network\obj\x86\Debug\NetworkRouting.pdb
+C:\Users\Jaron\Documents\Visual Studio 2015\Projects\Dijkstra-network\Dijkstra-network\bin\Debug\NetworkRouting.exe.manifest
+C:\Users\Jaron\Documents\Visual Studio 2015\Projects\Dijkstra-network\Dijkstra-network\bin\Debug\NetworkRouting.application
+C:\Users\Jaron\Documents\Visual Studio 2015\Projects\Dijkstra-network\Dijkstra-network\bin\Debug\NetworkRouting.exe
+C:\Users\Jaron\Documents\Visual Studio 2015\Projects\Dijkstra-network\Dijkstra-network\bin\Debug\NetworkRouting.pdb
+C:\Users\Jaron\Documents\Visual Studio 2015\Projects\Dijkstra-network\Dijkstra-network\obj\x86\Debug\NetworkRouting.Form1.resources
+C:\Users\Jaron\Documents\Visual Studio 2015\Projects\Dijkstra-network\Dijkstra-network\obj\x86\Debug\NetworkRouting.Properties.Resources.resources
+C:\Users\Jaron\Documents\Visual Studio 2015\Projects\Dijkstra-network\Dijkstra-network\obj\x86\Debug\Dijkstra-network.csproj.GenerateResource.Cache
+C:\Users\Jaron\Documents\Visual Studio 2015\Projects\Dijkstra-network\Dijkstra-network\obj\x86\Debug\NetworkRouting.exe.manifest
+C:\Users\Jaron\Documents\Visual Studio 2015\Projects\Dijkstra-network\Dijkstra-network\obj\x86\Debug\NetworkRouting.application
+C:\Users\Jaron\Documents\Visual Studio 2015\Projects\Dijkstra-network\Dijkstra-network\obj\x86\Debug\Dijkstra-network.csprojResolveAssemblyReference.cache
