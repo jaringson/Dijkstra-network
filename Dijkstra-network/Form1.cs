@@ -172,7 +172,7 @@ namespace NetworkRouting
             timer1.Stop();
             heapTimeBox.Text =  ""+ timer1.Elapsed;
 
-            Console.WriteLine(arrayCheckBox.CheckState.ToString());
+            //Console.WriteLine(arrayCheckBox.CheckState.ToString());
             if (arrayCheckBox.CheckState.ToString() == "Checked")
             {
                 Stopwatch timer2 = new Stopwatch();

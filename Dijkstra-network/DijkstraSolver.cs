@@ -14,13 +14,15 @@ namespace NetworkRouting
         public double dist;
         public HashSet<int> edges;
         public int location;
+        public int original;
 
-        public data(PointF point, double dist, HashSet<int> edges, int location)
+        public data(PointF point, double dist, HashSet<int> edges, int location, int original)
         {
             this.point = point;
             this.dist = dist;
             this.edges = edges;
             this.location = location;
+            this.original = original;
         }
     }
     internal class DijkstraSolver
@@ -34,7 +36,8 @@ namespace NetworkRouting
 
         Pen b_pen = new Pen(Color.FromArgb(255, 0, 0, 255));
 
-        public DijkstraSolver(List<PointF> points, Graphics graphics, List<HashSet<int>> adjacencyList, int startNodeIndex, int stopNodeIndex)
+        public DijkstraSolver(List<PointF> points, Graphics graphics, List<HashSet<int>> adjacencyList, 
+                                int startNodeIndex, int stopNodeIndex)
         {
             this.points = points;
             this.graphics = graphics;
@@ -44,42 +47,60 @@ namespace NetworkRouting
             final = new Dictionary<PointF, PointF>();
 
         }
-        public List<PointF> solve()
+        public unsafe List<PointF> solve()
         {
+
+
             List<PointF> shortest = new List<PointF>();
             List<data> queue = new List<data>();
             List<double> distances = new List<double>();
             List<int> possible = new List<int>();
             //List<PointF> prev = new List<PointF>();
-
-
+            data[] match = new data[points.Count];
+            
+            
+            
             for (int i = 0; i< points.Count;i++)
             {
                 possible.Add(i);
                 if (i == startNodeIndex)
                 {
-                    distances[i] = 0;
-                    insert(ref queue, new data(points[i], 0, adjacencyList[i],i));
+                    distances.Add(0);
+                    data temp = new data(points[i], 0, adjacencyList[i], i, i);
+                    match[i] = temp;
+                    insert(ref queue, ref temp);
                 }
                 else
                 {
-                    distances[i] = double.MaxValue;
-                    insert(ref queue, new data(points[i], double.MaxValue, adjacencyList[i],i));
+                    distances.Add(double.MaxValue);
+                    data temp = new data(points[i], double.MaxValue, adjacencyList[i], i, i);
+                    match[i] = temp;
+                    insert(ref queue, ref temp);
                 }
             }
+
+            
+
             while(queue.Count > 0)
             {
+
+                //Console.WriteLine(match[3].location);
+                //Console.WriteLine(queue[match[3].location].location);
+
                 data u = deletemin(ref queue);
-                possible.Remove(u.location);
+                possible[u.original] = -1;
                 foreach (int v in u.edges)
                 {
-                    if (!possible.Contains(v)) continue;
+                    if (possible[v] == -1) continue;
 
-                    int i_v = find_v(queue, distances[v], 1);
+                    
 
-                    double e_dist = eucl_dist(queue[i_v].point, u.point);
-                    if (queue[i_v].dist > u.dist + e_dist)
+                    double e_dist = eucl_dist(points[v], u.point);
+                    if (distances[v] > u.dist + e_dist)
                     {
+                        int i_v = match[v].location;
+                        if (i_v < 0) continue;
+
                         queue[i_v].dist = u.dist + e_dist;
                         distances[v] = u.dist + e_dist;
                         if (final.ContainsKey(queue[i_v].point))
@@ -104,19 +125,22 @@ namespace NetworkRouting
                 end = final[start];
             }
             draw(start, end);
+            
 
-
-            /*insert(ref queue, new data(new PointF(), 2, new HashSet<int>(), new PointF()));
-            insert(ref queue, new data(new PointF(), 4, new HashSet<int>(), new PointF()));
-            insert(ref queue, new data(new PointF(), 3, new HashSet<int>(), new PointF()));
-            insert(ref queue, new data(new PointF(), 9, new HashSet<int>(), new PointF()));
-            insert(ref queue, new data(new PointF(), 11, new HashSet<int>(), new PointF()));
-            insert(ref queue, new data(new PointF(), 8, new HashSet<int>(), new PointF()));
-            insert(ref queue, new data(new PointF(), 7, new HashSet<int>(), new PointF()));
-            insert(ref queue, new data(new PointF(), 1, new HashSet<int>(), new PointF()));
-            insert(ref queue, new data(new PointF(), 5, new HashSet<int>(), new PointF()));
-            insert(ref queue, new data(new PointF(), 10, new HashSet<int>(), new PointF()));
-
+            /*
+            //List<PointF> 
+            
+            insert(ref queue, new data(new PointF(), 2, new HashSet<int>(), 0));
+            insert(ref queue, new data(new PointF(), 4, new HashSet<int>(), 1));
+            insert(ref queue, new data(new PointF(), 3, new HashSet<int>(), 2));
+            insert(ref queue, new data(new PointF(), 9, new HashSet<int>(), 3));
+            insert(ref queue, new data(new PointF(), 11, new HashSet<int>(), 4));
+            insert(ref queue, new data(new PointF(), 8, new HashSet<int>(), 5));
+            insert(ref queue, new data(new PointF(), 7, new HashSet<int>(), 9));
+            insert(ref queue, new data(new PointF(), 1, new HashSet<int>(), 7));
+            insert(ref queue, new data(new PointF(), 5, new HashSet<int>(), 8));
+            insert(ref queue, new data(new PointF(), 10, new HashSet<int>(), 9));
+            
             Console.WriteLine();
             Console.WriteLine(deletemin(ref queue).dist);
             Console.WriteLine();
@@ -129,7 +153,7 @@ namespace NetworkRouting
             Console.WriteLine(deletemin(ref queue).dist);
             Console.WriteLine();
 
-            decrease_key(ref queue, 6.5,5);*/
+            
 
             int index = 0;
             foreach (data i in queue)
@@ -139,7 +163,15 @@ namespace NetworkRouting
                 if (index == 100) break;
             }
 
-    
+            Console.WriteLine();
+            Console.WriteLine(find_v(queue, 2, 1, 0)-1);
+            Console.WriteLine(find_v(queue, 10, 1, 9) - 1);
+            Console.WriteLine(find_v(queue, 7, 1, 6) - 1);
+            Console.WriteLine(find_v(queue, 3, 1, 2) - 1);
+            Console.WriteLine(find_v(queue, 9, 1, 6) - 1);
+            Console.WriteLine();*/
+
+
 
             return shortest;
         }
@@ -153,21 +185,45 @@ namespace NetworkRouting
                 move_up_queue(ref queue, index_mu);
             }
         }
-        public int find_v(List<data> queue, double distance, int index)
+        public int find_v(ref List<data> queue, double distance, int index, int v)
         {
-            double value = -1;
-            if(queue[index-1].dist == distance)
+            int value = -1;
+            if(queue[index-1].dist == distance && points[v] == queue[index-1].point)
             {
                 return index;
             }
-            if(2*index > queue.Count)
-            if(queue[(2*index) - 1].dist < distance)
+            if ((2 * index) -1 < queue.Count)
             {
-                return find_v(queue, distance, 2 * index);
+                if (queue[(2 * index) - 1].dist <= distance)
+                {
+                    value = find_v(ref queue, distance, 2 * index,v);
+
+                }
             }
-            if (queue[(2 * index + 1) - 1].dist < distance)
+            
+            if(value != -1)
             {
-                return find_v(queue, distance, 2 * index);
+                if (queue[value-1].dist == distance && points[v] == queue[value - 1].point)
+                {
+                    return value;
+                }
+            }
+
+            if ((2 * index) + 1 - 1 < queue.Count)
+            {
+                if (queue[(2 * index) + 1 - 1].dist <= distance)
+                {
+                    value = find_v(ref queue, distance, (2 * index) + 1, v);
+
+                }
+            }
+            
+            if (value != -1)
+            {
+                if (queue[value-1].dist == distance && points[v] == queue[value - 1].point)
+                {
+                    return value;
+                }
             }
             return value;
         }
@@ -183,10 +239,14 @@ namespace NetworkRouting
                     data temp = queue[(index / 2) - 1];
                     queue[(index / 2) - 1] = value;
                     queue[index - 1] = temp;
+                    queue[(index / 2) - 1].location = (index / 2) - 1;
+                    queue[index - 1].location = index - 1;
                     index = (index / 2);
+                    
                 }
                 if (index <= 1) break;
             }
+            
         }
         public data deletemin(ref List<data> queue)
         {
@@ -200,6 +260,7 @@ namespace NetworkRouting
             data last = queue[queue.Count - 1];
             queue.RemoveAt(queue.Count - 1);
             queue[0] = last;
+            queue[0].location = 0;
             int index = 1;
             int index_n;
             while (true)
@@ -218,7 +279,7 @@ namespace NetworkRouting
                 {
                     data right = queue[(2 * index + 1) - 1];
 
-                    if (left.dist < right.dist)
+                    if (left.dist <= right.dist)
                     {
                         child = left;
                         index_n = 2 * index;
@@ -234,16 +295,20 @@ namespace NetworkRouting
                     data temp = queue[index_n - 1];
                     queue[index_n - 1] = queue[index - 1];
                     queue[index - 1] = temp;
+                    queue[index - 1].location = index - 1;
+                    queue[index_n - 1].location = index_n - 1;
+
                     index = index_n;
+                    
                 }
                 else break;
 
             }
-
+            
             return min;
         }
 
-        public void insert(ref List<data> queue, data value)
+        public void insert(ref List<data> queue, ref data value)
         {
             queue.Add(value);
             int index = queue.Count;
