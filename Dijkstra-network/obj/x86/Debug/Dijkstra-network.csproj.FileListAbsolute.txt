@@ -11,3 +11,16 @@ C:\Users\Jaron\Documents\Visual Studio 2015\Projects\Dijkstra-network\Dijkstra-n
 C:\Users\Jaron\Documents\Visual Studio 2015\Projects\Dijkstra-network\Dijkstra-network\obj\x86\Debug\NetworkRouting.exe.manifest
 C:\Users\Jaron\Documents\Visual Studio 2015\Projects\Dijkstra-network\Dijkstra-network\obj\x86\Debug\NetworkRouting.application
 C:\Users\Jaron\Documents\Visual Studio 2015\Projects\Dijkstra-network\Dijkstra-network\obj\x86\Debug\Dijkstra-network.csprojResolveAssemblyReference.cache
+D:\Jaron\Documents\Visual Studio 2015\Projects\Dijkstra-network\Dijkstra-network\bin\Debug\NetworkRouting.exe.config
+D:\Jaron\Documents\Visual Studio 2015\Projects\Dijkstra-network\Dijkstra-network\obj\x86\Debug\NetworkRouting.exe
+D:\Jaron\Documents\Visual Studio 2015\Projects\Dijkstra-network\Dijkstra-network\obj\x86\Debug\NetworkRouting.pdb
+D:\Jaron\Documents\Visual Studio 2015\Projects\Dijkstra-network\Dijkstra-network\bin\Debug\NetworkRouting.exe.manifest
+D:\Jaron\Documents\Visual Studio 2015\Projects\Dijkstra-network\Dijkstra-network\bin\Debug\NetworkRouting.application
+D:\Jaron\Documents\Visual Studio 2015\Projects\Dijkstra-network\Dijkstra-network\bin\Debug\NetworkRouting.exe
+D:\Jaron\Documents\Visual Studio 2015\Projects\Dijkstra-network\Dijkstra-network\bin\Debug\NetworkRouting.pdb
+D:\Jaron\Documents\Visual Studio 2015\Projects\Dijkstra-network\Dijkstra-network\obj\x86\Debug\Dijkstra-network.csprojResolveAssemblyReference.cache
+D:\Jaron\Documents\Visual Studio 2015\Projects\Dijkstra-network\Dijkstra-network\obj\x86\Debug\NetworkRouting.Form1.resources
+D:\Jaron\Documents\Visual Studio 2015\Projects\Dijkstra-network\Dijkstra-network\obj\x86\Debug\NetworkRouting.Properties.Resources.resources
+D:\Jaron\Documents\Visual Studio 2015\Projects\Dijkstra-network\Dijkstra-network\obj\x86\Debug\Dijkstra-network.csproj.GenerateResource.Cache
+D:\Jaron\Documents\Visual Studio 2015\Projects\Dijkstra-network\Dijkstra-network\obj\x86\Debug\NetworkRouting.exe.manifest
+D:\Jaron\Documents\Visual Studio 2015\Projects\Dijkstra-network\Dijkstra-network\obj\x86\Debug\NetworkRouting.application

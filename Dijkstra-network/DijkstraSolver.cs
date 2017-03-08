@@ -7,20 +7,19 @@ using System.Linq;
 namespace NetworkRouting
 {
 
-    internal unsafe class data
+    internal class data
     {
-
+        //Internal class to keep track of the data of each point
+        //This is necessary becuase the data in queue gets mixed around
         public PointF point;
         public double dist;
-        public HashSet<int> edges;
         public int location;
         public int original;
 
-        public data(PointF point, double dist, HashSet<int> edges, int location, int original)
+        public data(PointF point, double dist, int location, int original)
         {
             this.point = point;
             this.dist = dist;
-            this.edges = edges;
             this.location = location;
             this.original = original;
         }
@@ -47,53 +46,50 @@ namespace NetworkRouting
             final = new Dictionary<PointF, PointF>();
 
         }
-        public unsafe List<PointF> solve()
+        public List<PointF> solve()
         {
-
-
+            // This is the solving function.
+            // Over all we have O(|V|log|V|+|V|log|V|+|E|log|V|) which
+            // reduces to O((E+V)log|V|).
             List<PointF> shortest = new List<PointF>();
             List<data> queue = new List<data>();
             List<double> distances = new List<double>();
             List<int> possible = new List<int>();
-            //List<PointF> prev = new List<PointF>();
             data[] match = new data[points.Count];
             
-            
-            
-            for (int i = 0; i< points.Count;i++)
+            // Make queue step. Takes O(|V|log(|V|)) because insert takes 
+            // O(log|V|) and we are inserting |V| nodes.
+            for (int i = 0; i< points.Count;i++) // O(|V|)
             {
                 possible.Add(i);
                 if (i == startNodeIndex)
                 {
                     distances.Add(0);
-                    data temp = new data(points[i], 0, adjacencyList[i], i, i);
+                    data temp = new data(points[i], 0, i, i);
                     match[i] = temp;
-                    insert(ref queue, ref temp);
+                    insert(ref queue, ref temp); // O(log|V|)
                 }
                 else
                 {
                     distances.Add(double.MaxValue);
-                    data temp = new data(points[i], double.MaxValue, adjacencyList[i], i, i);
+                    data temp = new data(points[i], double.MaxValue, i, i);
                     match[i] = temp;
-                    insert(ref queue, ref temp);
+                    insert(ref queue, ref temp); // O(log|V|)
                 }
             }
 
-            
-
-            while(queue.Count > 0)
+            while(queue.Count > 0) 
             {
+                // This while loop takes O(|V|) because we pop one node off
+                // the queue at a time.
 
-                //Console.WriteLine(match[3].location);
-                //Console.WriteLine(queue[match[3].location].location);
-
-                data u = deletemin(ref queue);
+                data u = deletemin(ref queue); // O(log|V|)
                 possible[u.original] = -1;
-                foreach (int v in u.edges)
+                foreach (int v in adjacencyList[u.original])
                 {
+                    // This step can take at worst O(|E|).
                     if (possible[v] == -1) continue;
 
-                    
 
                     double e_dist = eucl_dist(points[v], u.point);
                     if (distances[v] > u.dist + e_dist)
@@ -111,124 +107,56 @@ namespace NetworkRouting
                         {
                             final.Add(queue[i_v].point, u.point);
                         }
-                        decrease_key(ref queue, i_v);
+                        decrease_key(ref queue, i_v); // O(log|V|)
                     }
                 }
             }
-            PointF start = points[stopNodeIndex];
-            PointF end = final[points[stopNodeIndex]];
-
-            while (end.X != points[startNodeIndex].X && end.Y != points[startNodeIndex].Y)
+            try
             {
-                draw(start, end);
-                start = end;
-                end = final[start];
+                PointF start = points[stopNodeIndex];
+                PointF end = final[points[stopNodeIndex]];
+
+                shortest.Add(start);
+                shortest.Add(end);
+
+                while (end.X != points[startNodeIndex].X && end.Y != points[startNodeIndex].Y)
+                {
+                    start = end;
+                    end = final[start];
+                    shortest.Add(end);
+                }
             }
-            draw(start, end);
-            
-
-            /*
-            //List<PointF> 
-            
-            insert(ref queue, new data(new PointF(), 2, new HashSet<int>(), 0));
-            insert(ref queue, new data(new PointF(), 4, new HashSet<int>(), 1));
-            insert(ref queue, new data(new PointF(), 3, new HashSet<int>(), 2));
-            insert(ref queue, new data(new PointF(), 9, new HashSet<int>(), 3));
-            insert(ref queue, new data(new PointF(), 11, new HashSet<int>(), 4));
-            insert(ref queue, new data(new PointF(), 8, new HashSet<int>(), 5));
-            insert(ref queue, new data(new PointF(), 7, new HashSet<int>(), 9));
-            insert(ref queue, new data(new PointF(), 1, new HashSet<int>(), 7));
-            insert(ref queue, new data(new PointF(), 5, new HashSet<int>(), 8));
-            insert(ref queue, new data(new PointF(), 10, new HashSet<int>(), 9));
-            
-            Console.WriteLine();
-            Console.WriteLine(deletemin(ref queue).dist);
-            Console.WriteLine();
-
-            Console.WriteLine();
-            Console.WriteLine(deletemin(ref queue).dist);
-            Console.WriteLine();
-
-            Console.WriteLine();
-            Console.WriteLine(deletemin(ref queue).dist);
-            Console.WriteLine();
-
-            
-
-            int index = 0;
-            foreach (data i in queue)
+            catch(KeyNotFoundException e)
             {
-                index++;
-                Console.WriteLine(i.dist);
-                if (index == 100) break;
+                return new List<PointF>();
             }
-
-            Console.WriteLine();
-            Console.WriteLine(find_v(queue, 2, 1, 0)-1);
-            Console.WriteLine(find_v(queue, 10, 1, 9) - 1);
-            Console.WriteLine(find_v(queue, 7, 1, 6) - 1);
-            Console.WriteLine(find_v(queue, 3, 1, 2) - 1);
-            Console.WriteLine(find_v(queue, 9, 1, 6) - 1);
-            Console.WriteLine();*/
-
-
 
             return shortest;
         }
+
         public void decrease_key(ref List<data> queue, int index)
         {
-            //queue[index].dist = new_value;
+            // The ref of queue should already have the value decreased.
+            // This function moves the value up if the value at the index 
+            // specificed is lower.
+            // Time complecity is a order of O(log|V|).
             int index_mu = index + 1;
             if ((index / 2) - 1 < 0) return;
             if(queue[(index_mu / 2)-1].dist > queue[index_mu - 1].dist)
             {
                 move_up_queue(ref queue, index_mu);
+                // See function call for time complexity [O(log(|V|)]. 
             }
         }
-        public int find_v(ref List<data> queue, double distance, int index, int v)
-        {
-            int value = -1;
-            if(queue[index-1].dist == distance && points[v] == queue[index-1].point)
-            {
-                return index;
-            }
-            if ((2 * index) -1 < queue.Count)
-            {
-                if (queue[(2 * index) - 1].dist <= distance)
-                {
-                    value = find_v(ref queue, distance, 2 * index,v);
 
-                }
-            }
-            
-            if(value != -1)
-            {
-                if (queue[value-1].dist == distance && points[v] == queue[value - 1].point)
-                {
-                    return value;
-                }
-            }
-
-            if ((2 * index) + 1 - 1 < queue.Count)
-            {
-                if (queue[(2 * index) + 1 - 1].dist <= distance)
-                {
-                    value = find_v(ref queue, distance, (2 * index) + 1, v);
-
-                }
-            }
-            
-            if (value != -1)
-            {
-                if (queue[value-1].dist == distance && points[v] == queue[value - 1].point)
-                {
-                    return value;
-                }
-            }
-            return value;
-        }
+        
         public void move_up_queue(ref List<data> queue, int start_i)
         {
+            // This function is bubble up a value in binary heap.
+            // This is used by insert and decrease_key functions.
+            // The time complexity is one O(log|V|) because the value, at
+            // worst case, only moves up the queue's height which is only
+            // log|V|. Therefore the time complexity is only O(log|V|). 
             data value = queue[start_i - 1];
             int index = start_i;
             while (true)
@@ -248,8 +176,13 @@ namespace NetworkRouting
             }
             
         }
+
         public data deletemin(ref List<data> queue)
         {
+            // This function allows user to delete minimum from dinary heap.
+            // Time complecity is a order of O(log|V|).
+            // This is proven by the fact that a binary heap bubbles down
+            // a value from a heap which is only log|V| deap.
             if (queue.Count <= 1)
             {
                 data temp = queue[0];
@@ -310,6 +243,8 @@ namespace NetworkRouting
 
         public void insert(ref List<data> queue, ref data value)
         {
+            // Function to insert a value into the queue.
+            // Overall complexity of O(log|V|).
             queue.Add(value);
             int index = queue.Count;
             if (queue.Count == 1) return;
@@ -323,17 +258,19 @@ namespace NetworkRouting
                 }
                 return;
             }
-            move_up_queue(ref queue, index);
-
+            move_up_queue(ref queue, index); 
+            // See function call for time complexity [O(log(|V|)]. 
 
         }
 
         public double eucl_dist(PointF one, PointF two)
         {
+            //Simple function to calculate euclidean distance.
             return Math.Pow(Math.Pow((one.Y - two.Y), 2) + Math.Pow((one.X - two.X), 2),0.5);
         }
         public void draw(PointF one, PointF two)
         {
+            // Helper Function to draw lines
             graphics.DrawLine(b_pen, one.X, one.Y, two.X, two.Y);
         }
     }

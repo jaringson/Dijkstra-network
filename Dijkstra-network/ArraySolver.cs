@@ -31,7 +31,8 @@ namespace NetworkRouting
 
         Pen b_pen = new Pen(Color.FromArgb(255, 0, 0, 255));
 
-        public ArraySolver(List<PointF> points, Graphics graphics, List<HashSet<int>> adjacencyList, int startNodeIndex, int stopNodeIndex)
+        public ArraySolver(List<PointF> points, Graphics graphics, List<HashSet<int>> adjacencyList, 
+                            int startNodeIndex, int stopNodeIndex)
         {
             this.points = points;
             this.graphics = graphics;
@@ -43,28 +44,44 @@ namespace NetworkRouting
         }
         public List<PointF> solve()
         {
+            // This is the solving function.
+            // Over all we have O(|V|+|V|^2+|E|) which
+            // reduces to O(|V|^2).
+
+            List<int> indexes = new List<int>();
             List<PointF> shortest = new List<PointF>();
             List<Pair<PointF, double>> queue = new List<Pair<PointF, double>>();
-            //List<PointF> prev = new List<PointF>();
 
-
-            for (int i = 0; i < points.Count; i++)
+            // Make queue step. Takes O(|V|) because insert takes 
+            // O(1) and we are inserting |V| nodes.
+            for (int i = 0; i < points.Count; i++) // O(|V|)
             {
                 if (i == startNodeIndex)
                 {
-                    queue.Add(new Pair<PointF, double>(points[i],0));
+                    int index = i;
+                    indexes.Add(index); // O(1)
+                    queue.Add(new Pair<PointF, double>(points[i],0)); 
                 }
                 else
                 {
-                    queue.Add(new Pair<PointF, double>(points[i], double.MaxValue));
+                    int index = i;
+                    indexes.Add(index); // O(1)
+                    queue.Add(new Pair<PointF, double>(points[i], double.MaxValue)); 
                 }
             }
+
             while (queue.Count > 0)
             {
+                // This while loop takes O(|V|) because we pop one node off
+                // the queue at a time.
+
                 double smallest = double.MaxValue;
                 Pair<PointF, double> u = new Pair<PointF, double>();
-                
-                for (int i = 0; i < queue.Count; i++)
+
+                // This represents the delete min function in Dijsktra's
+                // The time complexity is O(|V|) becuase you need to check
+                // every point for the lowest value.
+                for (int i = 0; i < queue.Count; i++) 
                 {
                     if(queue[i].Second < smallest)
                     {
@@ -73,7 +90,6 @@ namespace NetworkRouting
                     }
                 }
                 queue.Remove(u);
-
                 int index = -1;
                 for (int i = 0; i < points.Count; i++)
                 {
@@ -98,6 +114,8 @@ namespace NetworkRouting
                     if(queue[i_v].Second > u.Second+ dist)
                     {
                         queue[i_v].Second = u.Second + dist;
+                        // Represents decrease key in O(1) time
+
                         if (final.ContainsKey(queue[i_v].First))
                         {
                             final[queue[i_v].First] = u.First;
@@ -112,16 +130,26 @@ namespace NetworkRouting
 
             }
 
-            PointF start = points[stopNodeIndex];
-            PointF end = final[points[stopNodeIndex]];
-
-            while (end.X != points[startNodeIndex].X && end.Y != points[startNodeIndex].Y)
+            try
             {
-                draw(start, end);
-                start = end;
-                end = final[start];
+                PointF start = points[stopNodeIndex];
+                PointF end = final[points[stopNodeIndex]];
+
+                shortest.Add(start);
+                shortest.Add(end);
+
+                while (end.X != points[startNodeIndex].X && end.Y != points[startNodeIndex].Y)
+                {
+                    start = end;
+                    end = final[start];
+                    shortest.Add(end);
+                }
             }
-            draw(start, end);
+            catch (KeyNotFoundException e)
+            {
+                return new List<PointF>();
+            }
+
             return shortest;
         }
         public int find_v(List<Pair<PointF, double>> queue, PointF point)

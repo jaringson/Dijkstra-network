@@ -161,35 +161,56 @@ namespace NetworkRouting
             }
         }
 
+        private double draw(PointF one, PointF two)
+        {
+            double dist = Math.Pow(Math.Pow((one.Y - two.Y), 2) + Math.Pow((one.X - two.X), 2), 0.5);
+            PointF mid = new PointF((one.X + two.X) / 2, (one.Y + two.Y) /2);
+            graphics.DrawLine(new Pen(Color.FromArgb(255, 0, 0, 255)), one.X, one.Y, two.X, two.Y);
+            graphics.DrawString(dist.ToString("0"), this.Font, Brushes.Black, mid);
+            return dist;
+        }
+
         private void solveButton_Clicked()
         {
+            List<PointF> sol = new List<PointF>();
             Stopwatch timer1 = new Stopwatch();
             timer1.Start();
 
-                DijkstraSolver d_solver = new DijkstraSolver(points, graphics, adjacencyList, startNodeIndex, stopNodeIndex);
-                d_solver.solve();
-
+                DijkstraSolver d_solver = new DijkstraSolver(points, graphics, adjacencyList, 
+                                            startNodeIndex, stopNodeIndex);
+                sol = d_solver.solve();
+            if(sol.Count == 0)
+            {
+                heapTimeBox.Text = "" + timer1.Elapsed;
+                pathCostBox.Text = "infinity";
+                return;
+            }
             timer1.Stop();
             heapTimeBox.Text =  ""+ timer1.Elapsed;
-
+            double total_dist = 0.0;
+            for(int i = 0;i < sol.Count-1; i++)
+            {
+                total_dist += draw(sol[i], sol[i + 1]);
+            }
+            pathCostBox.Text = total_dist.ToString("0");
             //Console.WriteLine(arrayCheckBox.CheckState.ToString());
             if (arrayCheckBox.CheckState.ToString() == "Checked")
             {
                 Stopwatch timer2 = new Stopwatch();
                 timer2.Start();
-
-                ArraySolver a_solver = new ArraySolver(points, graphics, adjacencyList, startNodeIndex, stopNodeIndex);
-                a_solver.solve();
-
+                    ArraySolver a_solver = new ArraySolver(points, graphics, adjacencyList, 
+                                            startNodeIndex, stopNodeIndex);
+                    sol = a_solver.solve();
                 timer2.Stop();
                 arrayTimeBox.Text = "" + timer2.Elapsed;
-
-                differenceBox.Text = "" + (timer2.Elapsed - timer1.Elapsed);
+                differenceBox.Text = "" + (timer2.Elapsed.TotalSeconds / timer1.Elapsed.TotalSeconds);
+                double total_dist_2 = 0.0;
+                for (int i = 0; i < sol.Count - 1; i++)
+                {
+                    total_dist_2 += draw(sol[i], sol[i + 1]);
+                }
+                pathCostBox.Text = total_dist.ToString("0");
             }
-            
-
-
-            // *** Implement this method, use the variables "startNodeIndex" and "stopNodeIndex" as the indices for your start and stop points, respectively ***
         }
 
         private Boolean startStopToggle = true;
